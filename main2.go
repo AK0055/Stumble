@@ -7,6 +7,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"gorm.io/driver/sqlite"
@@ -54,10 +55,14 @@ type Distance struct {
 	Name     string
 	Location int
 }
+type Substring struct {
+	Id   int
+	Name string
+}
 
 var m []Match
 var d []Distance
-var j []byte
+var sub []Substring
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the HomePage!")
@@ -72,11 +77,16 @@ func returnAllDist(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: returnAllDist")
 	json.NewEncoder(w).Encode(d)
 }
+func returnAllSub(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: returnAllSub")
+	json.NewEncoder(w).Encode(sub)
+}
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
 	myRouter.HandleFunc("/matches", returnAll)
 	myRouter.HandleFunc("/distance", returnAllDist)
+	myRouter.HandleFunc("/substring", returnAllSub)
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
 
@@ -360,7 +370,22 @@ func main() {
 	for i := 0; i < count1; i++ {
 		d = append(d, Distance{Person: nearuser[i], Name: nearname[i], Location: nearloc[i]})
 	}
-
+	var q string
+	var substrid []int
+	var substrname []string
+	var count2 int
+	fmt.Println("Enter query q:")
+	fmt.Scanln(&q)
+	for i := range User {
+		if strings.Contains(User[i].Name, q) == true {
+			substrid = append(substrid, User[i].Id)
+			substrname = append(substrname, User[i].Name)
+			count2++
+		}
+	}
+	for i := 0; i < count2; i++ {
+		sub = append(sub, Substring{Id: substrid[i], Name: substrname[i]})
+	}
 	handleRequests()
 
 }
