@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -48,9 +49,14 @@ type Match struct {
 	Name2     string
 	Location2 int
 }
+type Distance struct {
+	Person   int
+	Name     string
+	Location int
+}
 
 var m []Match
-
+var d []Distance
 var j []byte
 
 func homePage(w http.ResponseWriter, r *http.Request) {
@@ -62,10 +68,15 @@ func returnAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: returnAll")
 	json.NewEncoder(w).Encode(m)
 }
+func returnAllDist(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: returnAllDist")
+	json.NewEncoder(w).Encode(d)
+}
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
 	myRouter.HandleFunc("/matches", returnAll)
+	myRouter.HandleFunc("/distance", returnAllDist)
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
 
@@ -282,6 +293,7 @@ func main() {
 		fmt.Println(whoisliked[i])
 	}
 	var count = 0
+	var s []int
 	matchList := make(map[string]string)
 	for i := 0; i < 30; i++ {
 		for j := 0; j < 30; j++ {
@@ -290,6 +302,7 @@ func main() {
 					fmt.Println("Person with ID:" + strconv.Itoa(wholikes[i]) + "matches" + strconv.Itoa(whoisliked[i]))
 					matchList[strconv.Itoa(wholikes[i])] = strconv.Itoa(whoisliked[i])
 					count = 0
+
 				} else {
 					count++
 				}
@@ -298,10 +311,54 @@ func main() {
 			}
 		}
 	}
+	var loc []int
 	fmt.Println(matchList)
+
 	//creating endpoint
 	for p1, p2 := range matchList {
+		var P1, err3 = strconv.Atoi(p1)
+		var P2, err4 = strconv.Atoi(p2)
+		if err3 != nil && err4 != nil {
+			fmt.Println("error in conversion")
+		}
+		s = append(s, P1)
+		s = append(s, P2)
 		m = append(m, Match{Person1: p1, Person2: p2})
+	}
+	fmt.Println(s)
+	for i := range User {
+		for j := range s {
+			if User[i].Id == s[j] {
+				loc = append(loc, User[i].Location)
+			}
+		}
+
+	}
+	fmt.Println(loc)
+	var x int
+	var k int
+	fmt.Println("Enter user ID, x")
+	fmt.Scanln(&x)
+	fmt.Println("Enter distance ,k")
+	fmt.Scanln(&k)
+	fmt.Println("All the users within distance k from user X.")
+	var nearuser []int
+	var nearname []string
+	var nearloc []int
+	var count1 = 0
+	for i := range User {
+		if User[i].Id == x {
+			if math.Abs(float64(User[x].Location))-math.Abs(float64(User[i].Location)) <= float64(k) {
+				fmt.Println("User:" + strconv.Itoa(User[i].Id) + "lives at location" + strconv.Itoa(User[i].Location))
+				nearuser = append(nearuser, User[i].Id)
+				nearname = append(nearname, User[i].Name)
+				nearloc = append(nearloc, User[i].Location)
+				count1++
+			}
+		}
+	}
+	for i := 0; i < count1; i++ {
+		d = append(d, Distance{Person: nearuser[i], Name: nearname[i], Location: nearloc[i]})
 	}
 
 	handleRequests()
