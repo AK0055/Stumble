@@ -1,4 +1,4 @@
-# Stumble
+# Tumble
 A dating app created using GoLang
 <h3>Task Description</h3>
 Imagine there is a dating app “tumble” where there are many
