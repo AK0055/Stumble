@@ -157,10 +157,7 @@ func main() {
 		}
 
 	}
-	for i := range User {
-		fmt.Println(User[i].Name + " - " + User[i].Like)
 
-	}
 	for i := range User {
 		if User[i].Like == "💗" {
 			fmt.Println("You like:" + User[i].Name + User[i].Like)
