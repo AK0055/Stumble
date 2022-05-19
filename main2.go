@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // declaring a struct
@@ -15,12 +18,42 @@ type User struct {
 	Location int
 	Like     string
 }
+type Likez struct {
+	Id           int
+	Who_likes    int
+	Who_is_liked int
+}
+type UserDB struct {
+	gorm.Model
+	Id       int
+	Name     string
+	Gender   string
+	Email    string
+	Location int
+}
+type LikesDB struct {
+	gorm.Model
+	Id           int
+	Who_likes    int
+	Who_is_liked int
+}
 
 // main function
 func main() {
 	fmt.Println("STUMBLE")
 	// defining a struct instance
 	var User []User
+	var Likez []Likez
+	//creating a RDBMS database model using GORM
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	// Migrate the schema
+	db.AutoMigrate(&UserDB{})
+	db.AutoMigrate(&LikesDB{})
+	// Create
 
 	// JSON array to be decoded
 	// to an array in golang
@@ -126,19 +159,59 @@ func main() {
 	{"id":99,"name":"Federica","location":-24,"gender":"Female","email":"fbunworth2q@mayoclinic.com"},
 	{"id":100,"name":"Jacques","location":-11,"gender":"Male","email":"jespie2r@cisco.com"}]`)
 
+	Data2 := []byte(`
+	[{"id":1,"who_likes":11,"who_is_liked":81},
+	{"id":2,"who_likes":36,"who_is_liked":33},
+	{"id":3,"who_likes":20,"who_is_liked":32},
+	{"id":4,"who_likes":26,"who_is_liked":61},
+	{"id":5,"who_likes":78,"who_is_liked":33},
+	{"id":6,"who_likes":8,"who_is_liked":34},
+	{"id":7,"who_likes":91,"who_is_liked":88},
+	{"id":8,"who_likes":68,"who_is_liked":72},
+	{"id":9,"who_likes":15,"who_is_liked":28},
+	{"id":10,"who_likes":86,"who_is_liked":62},
+	{"id":11,"who_likes":67,"who_is_liked":2},
+	{"id":12,"who_likes":20,"who_is_liked":83},
+	{"id":13,"who_likes":37,"who_is_liked":44},
+	{"id":14,"who_likes":67,"who_is_liked":35},
+	{"id":15,"who_likes":36,"who_is_liked":66},
+	{"id":16,"who_likes":42,"who_is_liked":32},
+	{"id":17,"who_likes":9,"who_is_liked":18},
+	{"id":18,"who_likes":96,"who_is_liked":26},
+	{"id":19,"who_likes":66,"who_is_liked":34},
+	{"id":20,"who_likes":81,"who_is_liked":11},
+	{"id":21,"who_likes":20,"who_is_liked":81},
+	{"id":22,"who_likes":55,"who_is_liked":11},
+	{"id":23,"who_likes":75,"who_is_liked":78},
+	{"id":24,"who_likes":16,"who_is_liked":92},
+	{"id":25,"who_likes":75,"who_is_liked":85},
+	{"id":26,"who_likes":66,"who_is_liked":36},
+	{"id":27,"who_likes":51,"who_is_liked":64},
+	{"id":28,"who_likes":92,"who_is_liked":23},
+	{"id":29,"who_likes":2,"who_is_liked":67},
+	{"id":30,"who_likes":34,"who_is_liked":8}]`)
 	// decoding JSON array to
 	// the User array
-	err := json.Unmarshal(Data, &User)
-
-	if err != nil {
+	var err1 = json.Unmarshal(Data, &User)
+	var err2 = json.Unmarshal(Data2, &Likez)
+	if err1 != nil {
 		fmt.Println(err)
+	}
+	if err2 != nil {
+		fmt.Println(err2)
 	}
 
 	// printing decoded array
 	// values one by one
+	//store in test.db
 	for i := range User {
 		fmt.Println("Name:" + User[i].Name + " - Gender:" + User[i].Gender + " - Email:" + User[i].Email)
 		fmt.Println("Location: " + strconv.Itoa(User[i].Location))
+		db.Create(&UserDB{Id: User[i].Id, Name: User[i].Name, Gender: User[i].Gender, Email: User[i].Email, Location: User[i].Location})
+	}
+	for i := range Likez {
+		fmt.Println("ID:" + strconv.Itoa(Likez[i].Id) + " - Who likes:" + strconv.Itoa(Likez[i].Who_likes) + " - Who is liked:" + strconv.Itoa(Likez[i].Who_is_liked))
+		db.Create(&LikesDB{Id: Likez[i].Id, Who_likes: Likez[i].Who_likes, Who_is_liked: Likez[i].Who_is_liked})
 	}
 	fmt.Printf("Enter number of people you want to like: ")
 	var size int
