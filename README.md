@@ -1,7 +1,7 @@
-# Tumble
+# Stumble
 A dating app created using GoLang
 <h3>Task Description</h3>
-Imagine there is a dating app “tumble” where there are many
+Imagine there is a dating app “Stumble” where there are many
 users. There is also a feature for a user to like as many users as he/
 she wants. You are given the list of these users in the JSON file.
 Each user will have id (int mandatory), name (string mandatory),
