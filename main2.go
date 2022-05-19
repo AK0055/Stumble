@@ -3,8 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -37,6 +40,34 @@ type LikesDB struct {
 	Who_likes    int
 	Who_is_liked int
 }
+type Match struct {
+	Person1   string
+	Name1     string
+	Location1 int
+	Person2   string
+	Name2     string
+	Location2 int
+}
+
+var m []Match
+
+var j []byte
+
+func homePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Welcome to the HomePage!")
+	fmt.Println("Endpoint Hit: homePage")
+}
+
+func returnAll(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: returnAll")
+	json.NewEncoder(w).Encode(m)
+}
+func handleRequests() {
+	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.HandleFunc("/", homePage)
+	myRouter.HandleFunc("/matches", returnAll)
+	log.Fatal(http.ListenAndServe(":10000", myRouter))
+}
 
 // main function
 func main() {
@@ -44,6 +75,7 @@ func main() {
 	// defining a struct instance
 	var User []User
 	var Likez []Likez
+
 	//creating a RDBMS database model using GORM
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
@@ -238,4 +270,40 @@ func main() {
 			continue
 		}
 	}
+	//all matches
+	var wholikes = make([]int, 30)
+	var whoisliked = make([]int, 30)
+	for i := 0; i < 30; i++ {
+		wholikes[i] = Likez[i].Who_likes
+		whoisliked[i] = Likez[i].Who_is_liked
+	}
+	for i := 0; i < 30; i++ {
+		fmt.Println(wholikes[i])
+		fmt.Println(whoisliked[i])
+	}
+	var count = 0
+	matchList := make(map[string]string)
+	for i := 0; i < 30; i++ {
+		for j := 0; j < 30; j++ {
+			if wholikes[i] == whoisliked[j] {
+				if count == 2 {
+					fmt.Println("Person with ID:" + strconv.Itoa(wholikes[i]) + "matches" + strconv.Itoa(whoisliked[i]))
+					matchList[strconv.Itoa(wholikes[i])] = strconv.Itoa(whoisliked[i])
+					count = 0
+				} else {
+					count++
+				}
+			} else {
+				continue
+			}
+		}
+	}
+	fmt.Println(matchList)
+	//creating endpoint
+	for p1, p2 := range matchList {
+		m = append(m, Match{Person1: p1, Person2: p2})
+	}
+
+	handleRequests()
+
 }
