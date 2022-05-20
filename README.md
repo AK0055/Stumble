@@ -18,7 +18,7 @@ and “likes” data in the DB.
 likes Y & Y likes X) 
 - Given user X and distance k- create an endpoint to retrieve all
 the users within distance k from user X. (Assume you are given the
-distance of each user in the 1D coordinate system)_
+distance of each user in the 1D coordinate system)
 - Given input query q (string)- create an endpoint to retrieve all the
 users which have q in their name
 (Use localhost and port of your choice for creating endpoints
