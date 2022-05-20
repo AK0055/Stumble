@@ -1,5 +1,6 @@
 package main
 
+//Importing necessary libraries
 import (
 	"encoding/json"
 	"fmt"
@@ -14,7 +15,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// declaring a struct
+// declaring a struct for Users
 type User struct {
 	Id       int
 	Name     string
@@ -23,11 +24,15 @@ type User struct {
 	Location int
 	Like     string
 }
+
+// declaring a struct for Likes
 type Likez struct {
 	Id           int
 	Who_likes    int
 	Who_is_liked int
 }
+
+// declaring a struct for User DB schema
 type UserDB struct {
 	gorm.Model
 	Id       int
@@ -36,12 +41,16 @@ type UserDB struct {
 	Email    string
 	Location int
 }
+
+// declaring a struct for Likes DB schema
 type LikesDB struct {
 	gorm.Model
 	Id           int
 	Who_likes    int
 	Who_is_liked int
 }
+
+// declaring a struct for Match endpoint
 type Match struct {
 	Person1   string
 	Name1     string
@@ -50,37 +59,52 @@ type Match struct {
 	Name2     string
 	Location2 int
 }
+
+// declaring a struct for Distance endpoint
+
 type Distance struct {
 	Person   int
 	Name     string
 	Location int
 }
+
+// declaring a struct for Substring query endpoint
+
 type Substring struct {
 	Id   int
 	Name string
 }
 
+//declaring instances of the structures
 var m []Match
 var d []Distance
 var sub []Substring
 
+//sample homepage endpoint
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the HomePage!")
 	fmt.Println("Endpoint Hit: homePage")
 }
 
+//Endpoint to return all matches
 func returnAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: returnAll")
 	json.NewEncoder(w).Encode(m)
 }
+
+//Endpoint to return all users within distance k
 func returnAllDist(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: returnAllDist")
 	json.NewEncoder(w).Encode(d)
 }
+
+//Endpoint to return q substring in user names
 func returnAllSub(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: returnAllSub")
 	json.NewEncoder(w).Encode(sub)
 }
+
+//function to handle requests, create routes
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
@@ -93,7 +117,7 @@ func handleRequests() {
 // main function
 func main() {
 	fmt.Println("STUMBLE")
-	// defining a struct instance
+	// defining a struct instances for User and Likez struct
 	var User []User
 	var Likez []Likez
 
@@ -103,13 +127,11 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	// Migrate the schema
+	// Migrate the schemas
 	db.AutoMigrate(&UserDB{})
 	db.AutoMigrate(&LikesDB{})
-	// Create
 
-	// JSON array to be decoded
-	// to an array in golang
+	//Likes.JSON
 	Data := []byte(`
     [{"id":1,"name":"Auguste","location":-19,"gender":"Female"},
 	{"id":2,"name":"Ned","location":-25,"gender":"Male"},
@@ -212,6 +234,7 @@ func main() {
 	{"id":99,"name":"Federica","location":-24,"gender":"Female","email":"fbunworth2q@mayoclinic.com"},
 	{"id":100,"name":"Jacques","location":-11,"gender":"Male","email":"jespie2r@cisco.com"}]`)
 
+	//Users.JSON
 	Data2 := []byte(`
 	[{"id":1,"who_likes":11,"who_is_liked":81},
 	{"id":2,"who_likes":36,"who_is_liked":33},
@@ -298,10 +321,6 @@ func main() {
 		wholikes[i] = Likez[i].Who_likes
 		whoisliked[i] = Likez[i].Who_is_liked
 	}
-	for i := 0; i < 30; i++ {
-		fmt.Println(wholikes[i])
-		fmt.Println(whoisliked[i])
-	}
 	var count = 0
 	var s []int
 	matchList := make(map[string]string)
@@ -324,7 +343,7 @@ func main() {
 	var loc []int
 	fmt.Println(matchList)
 
-	//creating endpoint
+	//creating endpoint for matches
 	for p1, p2 := range matchList {
 		var P1, err3 = strconv.Atoi(p1)
 		var P2, err4 = strconv.Atoi(p2)
@@ -335,7 +354,6 @@ func main() {
 		s = append(s, P2)
 		m = append(m, Match{Person1: p1, Person2: p2})
 	}
-	fmt.Println(s)
 	for i := range User {
 		for j := range s {
 			if User[i].Id == s[j] {
@@ -344,14 +362,14 @@ func main() {
 		}
 
 	}
-	fmt.Println(loc)
+	//creating endpoint for retrieving all users within distance k
 	var x int
 	var k int
 	fmt.Println("Enter user ID, x")
 	fmt.Scanln(&x)
 	fmt.Println("Enter distance ,k")
 	fmt.Scanln(&k)
-	fmt.Println("All the users within distance k from user X.")
+	fmt.Println("All the users within distance k from user X:")
 	var nearuser []int
 	var nearname []string
 	var nearloc []int
@@ -370,6 +388,7 @@ func main() {
 	for i := 0; i < count1; i++ {
 		d = append(d, Distance{Person: nearuser[i], Name: nearname[i], Location: nearloc[i]})
 	}
+	//Creating enpoint for retreieving users that have a substring q in their name
 	var q string
 	var substrid []int
 	var substrname []string
@@ -384,8 +403,10 @@ func main() {
 		}
 	}
 	for i := 0; i < count2; i++ {
+		fmt.Println("User ID:" + strconv.Itoa(substrid[i]) + "User Name:" + substrname[i])
 		sub = append(sub, Substring{Id: substrid[i], Name: substrname[i]})
 	}
+	//handle all API requests
 	handleRequests()
 
 }

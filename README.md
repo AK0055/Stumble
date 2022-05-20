@@ -23,3 +23,21 @@ distance of each user in the 1D coordinate system)_
 users which have q in their name
 (Use localhost and port of your choice for creating endpoints
 create api documentation- bonus for deployment)
+
+<h3>Libraries used</h3>
+-   "encoding/json" for JSON parsing and encoding
+-	"fmt" for basic formatting and printing 
+-	"log" for an active logging object that generates lines of output to an io.Writer
+-	"math" for using absolute function
+-    "net/http" for serving HTTP requests
+-	"strconv" for string conversion
+-	"strings" for string manipulation
+-	"github.com/gorilla/mux" for routing different endpoints 
+-	"gorm.io/driver/sqlite" for providing functions of the mysqlite GORM model
+-	"gorm.io/gorm" for providing GORM capabilities
+)
+<h3>API documentation</h3>
+- Use the URL: `http://localhost:10000/` to access the homepage
+- `http://localhost:10000/matches` to access the matches endpoint
+- `http://localhost:10000/distance` to access the distance endpoint
+- `http://localhost:10000/substring` to access the substring query endpoint
