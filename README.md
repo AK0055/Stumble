@@ -37,10 +37,10 @@ create api documentation- bonus for deployment)
 -`gorm.io/gorm` for providing GORM capabilities
 )
 <h3>API documentation</h3>
--Use the URL: `http://localhost:10000/` to access the homepage
--`http://localhost:10000/matches` to access the matches endpoint
--`http://localhost:10000/distance` to access the distance endpoint
--`http://localhost:10000/substring` to access the substring query endpoint
+- Use the URL: http://localhost:10000/ to access the homepage
+- http://localhost:10000/matches to access the matches endpoint
+- http://localhost:10000/distance to access the distance endpoint
+- http://localhost:10000/substring to access the substring query endpoint
 
 
 ![Screenshot](Screenshots/Matches.png)
