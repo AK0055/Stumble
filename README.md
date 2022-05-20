@@ -39,8 +39,10 @@ create api documentation- bonus for deployment)
 <h3>API documentation</h3>
 - Use the URL: `http://localhost:10000/` to access the homepage
 - http://localhost:10000/matches` to access the matches endpoint
-![Screenshot](Screenshots/Matches.png)
 -`http://localhost:10000/distance` to access the distance endpoint
-![Screenshot](Screenshots/Distance.png)
 -`http://localhost:10000/substring` to access the substring query endpoint
+
+
+![Screenshot](Screenshots/Matches.png)
+![Screenshot](Screenshots/Distance.png)
 ![Screenshot](Screenshots/Substring.png)
