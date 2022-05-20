@@ -52,12 +52,8 @@ type LikesDB struct {
 
 // declaring a struct for Match endpoint
 type Match struct {
-	Person1   string
-	Name1     string
-	Location1 int
-	Person2   string
-	Name2     string
-	Location2 int
+	Person1 string
+	Person2 string
 }
 
 // declaring a struct for Distance endpoint
